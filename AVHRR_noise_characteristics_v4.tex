@@ -1,0 +1,696 @@
+\documentclass[remotesensing,article,submit,moreauthors,pdftex,10pt,a4paper]{mdpi} 
+%=================================================================
+\firstpage{1} 
+\makeatletter 
+\setcounter{page}{\@firstpage} 
+\makeatother
+\pubvolume{xx}
+\issuenum{x}
+\articlenumber{x}
+\pubyear{2018}
+\copyrightyear{2018}
+%\externaleditor{Academic Editor: name}
+\history{Received: date; Accepted: date; Published: date}
+%=================================================================
+\usepackage[squaren, Gray, cdot]{SIunits}
+\usepackage[it]{modsubfig}
+\usepackage[flushleft]{threeparttable}
+%=================================================================
+
+\Title{Instrumental noise in the visible and infrared channels of the AVHRR}
+%\newcommand{\orcidauthorA}{0000-0000-000-000X} 
+\Author{Marine Desmons $^{1}$, Jonathan P. D. Mittaz $^{2}$, Michael Taylor $^{2,*}$ and Christopher J. Merchant $^{2,3}$}
+\AuthorNames{Marine Desmons, Jonathan Mittaz, Michael Taylor and Christopher Merchant}
+\address{$^{1}$\quad Koninklijk Nederlands Meteorologisch Instituut, De Bilt, Nederlands\\
+$^{2}$\quad Department of Meteorology, University of Reading, UK\\
+$^{3}$\quad National Centre for Earth Observation, UK}
+\corres{Correspondence: michael.taylor@reading.ac.uk; Tel.: +44(0)118-378-5216}
+
+\abstract{The Advanced Very High Resolution Radiometer (AVHRR) measures visible reflectance and infrared radiance at the top of the atmosphere and provides a multi-decadal data record for use in climate applications. AVHRR infrared radiance data in particular, is used as a principal input to optimal estimation algorithms that retrieve important atmospheric parameters (cloud properties, aerosol optical depth) and surface parameters (sea surface temperature, surface reflectance). Radiance uncertainties are therefore required to ensure that there can be confidence in any inferences made in the retrievals. One very important component of the radiance uncertainty is instrumental noise which is analysed here. By monitoring the mean detector temperature and gain, the noise on the space view and internal calibration target counts, and the noise equivalent error (NE$\Delta$T), on the scale of an individual orbit and also over the lifetime of different AVHRR versions flying on the NOAA and MetOp satellites, we find noise characteristics that can be traced back to different physical drivers. In terms of individual AVHRR sensors, we show that TIROS-N is very noisy and has different regimes within an orbit, and that the AVHRR/1 and AVHRR/2 models have higher noise levels than the AVHRR/3 sensors whose sun shield has helped stabilize the temporal evolution of its thermal noise. We also show that the \SIunits{3.7}{\micro\meter} channel is much noisier than the \SIunits{11}{\micro\meter} and \SIunits{12}{\micro\meter} channels, and how the derived noise is included as part of the new AVHRR fundamental climate data record developed under the H2020 FIDUCEO project (www.fiduceo.eu).}
+\keyword{AVHRR; climate data record; infrared channel; noise filtering.}
+%\PACS{J0101}
+\begin{document}
+\newpage \tableofcontents \listoffigures \listoftables \newpage
+
+% MT: %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% KEY POINTS:
+% ----------
+% 1. MAIN POINT: use of single noise estimate (e.g. NEdT) per sensor from e.g. pre-launch assessment is to be avoided due to temporal nature of the noise and deviations from white-noise spectrum
+% 2. need for a metrology of noise in the Earth scene view -->  important to understand traceable source of noise magnitude / variability
+% 3. noise varies around an orbit (NB: role of solar contamination)
+% 4. orbital mean is not necessarily correct nor representative over the lifetime of sensor data due to instrument degredation and/or changes in physical sources of noise
+% 5. the noise spectrum of the 3.7 micron channel is significantly different to that of the 11 and 12 micron channels - include example case from Jon's 2016 document + see discussion in Imke's paper on noise spectra behaviour (white and pink noise spectra context for channel noise)
+% 6. Imke demonstrated how it is important to decouple noise magnitude (NEdT) from the variability of the gain
+% 7. by estimating the pixel-level noise (plus its uncertainty) it is possible to correctly attribute the independent uncertainty (magnitude / temporal variation) 
+% 8. Karlssen et al demonstrated how not taking into account temporal variation of the noise can induce spurious trends in CDR retrievals (by affecting e.g. cloud detection thresholds) --> relevant to discussion of long-term stability / validity of CDRs
+% 9. on whether to use BB view counts or ICT view counts as the reference for the study of the Earth scene view (via differences) - it is important to decide which is correct. There is a case for believing that the BB view counts should be used because the space view counts are affected by electronic circuit design and ringing resulting from sampling rate in combination with digitisation (e.g. striping in the BTs in Fig 8) / RFI pickup in the 3.7 micron channel
+% 10. in FIDUCEO we remove outliers in the counts data
+% 11. need to provide lots of examples of different temporal behaviours
+
+% EXISTING TABLES:
+% ---------------
+
+% TABLE 1  = OK = sensor launch codes
+% TABLE 2  = OK = sensor channel info
+% TABLE 3  = FIX = NEdT: NOAA14,15,16 --> no values? NOAA17 & MetopA --> no features? (NB: check we have enough plots to provide visual back-up of reported features)
+
+% EXISTING FIGURES:
+% ----------------
+
+% FIG  1  = OK = quadratic model assumption
+% FIG  2  = OK = NOAA19-3.7um: mean T(prt) & mean ICT for 3 consec orbits on 07 May 2012 --> re-do + add mean line?
+% FIG  3  = REDO  = NOAA19-3.7um: s.d. & Allen dev. for ? orbits in May 2012 --> re-do with standard time axis labels + colour
+% FIG  4  = REDO = NOAA19-11um: outlier removal for 24 days in May 2012 --> re-do with standard time axis labels
+% FIG  5  = REDO  = NOAA09-0.6um: why is mean(counts) higher than noise(counts) ?
+% FIG  6  = REDO  = NOAA07-3.7,11,12um: SP v ICT noise + pre-flight spec before / after filtering --> re-do with consistent y-axes, time axis + pre-launch spec lines
+% FIG  7  = REDO  = NOAA18-3.7,11um: mean T(prt), gain, SP & ICT counts, NEdT over lifetime --> re-do
+% FIG  8  = REDO  = NOAA09-3.7um: striping in BT --> axes? time period? --> re-do
+% FIG  9  = REDO  = TIROSN-3.7um: single orbit 07 Feb 1979 SP & ICT counts -->  re-do + axes + time axis labels
+% FIG 10  = ?  = 
+
+% WISH-LIST OF ADDITIONAL TABLES & FIGURES:
+% ----------------------------------------
+
+% [MT] Plot of linkeages between physical sources of Earth, space and ICT count noise and variability (along the lines of a measurement tree)
+
+% [MT] Plot of ECTs (ascending node) for NOAA and METOP-A similar to Fig 1 of Hans et al (2017): https://doi.org/10.5194/amt-10-4927-2017
+
+% Plot of T_ICT for all 4 PRTs over several orbits for pertinent cases as per Fig 2 of Burgdorf et al (2018):
+% https://doi.org/10.5194/amt-11-4005-2018
+
+% Plot of signal range in counts and brightness temperature for earth scenes, the ICT and deep space along the lines of Fig 3 of Burgdorf et al (2018):
+% https://doi.org/10.5194/amt-11-4005-2018
+
+% Plot of channel bias functions for interesting noise spectra cases as per Fig 4 of Hans et al (2017):
+% https://doi.org/10.5194/amt-10-4927-2017
+
+% Plot of space view count timeseries for each channel per sensor as per Fig 6 of Hans et al (2017):
+% https://doi.org/10.5194/amt-10-4927-2017
+
+% Plot of cold and warm NEdT timeseries for each channel per sensor as per Fig 7 and 8 of Hans et al (2017):
+% https://doi.org/10.5194/amt-10-4927-2017
+
+% Plot of usable IR channel data records with cold NEdT < 1 K as per Fig 9 of Hans et al (2017):
+% https://doi.org/10.5194/amt-10-4927-2017
+
+% LIST OF SOURCE DATA NEEDED:
+% --------------------------
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction}
+\label{introduction}
+
+The Advanced Very High Resolution Radiometer (AVHRR) is one of the most widely used sensors for operational long-term monitoring from space \cite{cracknell_advanced_1997}. It flies on board the National Oceanic and Atmospheric Administration (NOAA) series of polar operational environmental satellites and the European Space Agency (ESA) series of polar orbiting meteorological operational (MetOp) satellites. The first AVHRR sensor was launched on the Television Infrared Observation Satellite (TIROS-N) and came into service on 19 October 1978. Via overlap of AVHRR sensor series data, 37 years of continuous global coverage data is now available \citep{bulgin_avhrr_2018} meaning that the instrument is providing important information on climate-related changes in the global environment. Furthermore, thermal (infrared channel) data from the AVHRR is assimilated into numerical weather prediction (NWP) models, making it central to operational weather forecasting systems \citep{pavelin_nwp_2008}.
+
+Data from the AVHRR visible and infrared channels has been used to determine land surface parameters such as surface reflectance \citep{trishchenko_effects_2009} and normalised difference vegetation index (NDVI)\citep{kidwell_noaa_1997}, and atmospheric parameters such as cloud properties \citep{kawamoto_global_2001,stowe_global_1991} and aerosol optical depth (AOD) \citep{ignatov_operational_2004}. AVHRR thermal data is also used to detect and monitor forest fires \citep{li_review_2001}. One of the most important parameters derived from AVHRR measurements is the global sea surface temperature (SST) \citep{kilpatrick_overview_2001,merchant_gbcs_2005,merchant_oe_2008,merchant_atsr_2012,merchant_sst_2014}. SST is an essential climate variable (ECV) for many climate science applications, including fundamental quantification of the rate of climate change and climate sensitivity. The in-situ SST observing system using drifter buoys has also evolved significantly since the late 1970's \citep{castro_buoy_2012}, and AVHRR-based SSTs have an important complementary role to play in helping understand marine change \citep{belkin_marine_2009,miloslavich_oceans_2018}.
+
+Since thermal channels are calibrated in-flight, it is often believed that high quality data output is automatically ensured. However, this is not always the case as satellites are prone to noise, and data distortion may also occur during transmission of the signal through the atmosphere\citep{dudhia_noise_1989}. Data may also be strongly affected by processes occurring within the instrument itself, for example, due to fluctuations of the thermal state of the detector, solar contamination of calibration cycles, or during digital conversions. As calibration accuracy of satellite data directly affects the accuracy of retrieved parameters, there is a need to correctly quantify instrumental noise. In the context of global climate monitoring and change detection, SST and land surface temperatures are required with high accuracy (the generally accepted requirement is $\pm 0.1 K$ over 100km scales \citep{gcos_sst}), and hence a proper estimate of the uncertainty associated with AVHRR thermal measurements is of critical importance \citep{merchant_uncertainty_2017}. 
+
+In this paper, we assess the uncertainties in the thermal channels of all AVHRR instruments (TIROS-N to MetOp-B) as a key step in the metrological recalibration of top of atmosphere (TOA) radiances used to generate fundamental climate data records (FCDR) for the FIDUCEO project (\url{www.fiduceo.eu}). Section~\ref{calibration_principles} describes the general principles of the AVHRR thermal-channel calibration. Section~\ref{calculate_uncertainties} presents the methods we have used to estimate the amplitude of the noise. Section~\ref{noise_characteristics} analyses the noise characteristics of different versions of the AVHRR in the temporal and in the spectral domain. Section~\ref{noise_metrology} attributes noise to various physical effects and outlines the metrological framework used to propagate noise uncertainty into the uncertainty on TOA radiance. We discuss the potential impact of improved noise quantification in section~\ref{discussion} before concluding in section~\ref{conclusion}.
+
+%%%%%%%%%%%% MD  %%
+% I have completed a bit this section and therefore propose to change it's name so it suits its content
+%\section{AVHRR thermal calibration}
+\section{The AVHRR instrument}
+\label{calibration_principles}
+%%%%
+\subsection{Generalities}
+The AVHRR is a scanning radiometer with solar channels in the visible-near infrared region and thermal channels in the infrared. Several versions of the AVHRR instrument have been produced: a four-channel version was first launched on board TIROS-N and a slightly different four-channel version has flown on NOAA-6, -8 and -10. AVHRR/2 was deployed on NOAA-7, -9, -11, -12, -14, with five channels: two in the visible (\SIunits{0.58 - 0.68}{\micro\meter} and \SIunits{0.725 - 1.10}{\micro\meter}) and three in the infrared (\SIunits{3.55 - 3.93}{\micro\meter} (channel 3B), \SIunits{10.30-11.30}{\micro\meter} and \SIunits{11.5 - 12.5}{\micro\meter}). The current version of the instrument, AVHRR/3 used since NOAA-15, has an additional channel (3A) in the \SIunits{1.58 - 1.64}{\micro\meter} spectral region \citep{goodrum_noaa_2007}. Channels 3A and 3B operate alternately during the day (3A) and during the night (3B). All channels are registered so that they all measure radiant energy from the same spot on the earth at the same time. They are also calibrated so that the signal amplitude in each channel is a measure of the scene radiance. Table\,\ref{names_of_spacecraft} lists the different versions of the AVHRR with their respective satellite platform and period of activity. Table\,\ref{spectral_bands} lists the different spectral bands associated with each version.
+
+\begin{table}[H]
+\caption{Pre-launch and post-launch names of AVHRR-carrying spacecraft}
+\centering 
+\begin{threeparttable} {\begin{tabular}[l]{@{}llll} \toprule
+Pre-launch name & Post-launch name & Version instrument & Period of service\\
+\midrule
+TIROS-N & TIROS-N & AVHRR & 11-1978 / 01-1980 \\
+NOAA-A  & NOAA-6 & AVHRR & 07-1979 / 03-1982 \\
+NOAA-B \tnote{*} & - & - & - \\
+NOAA-C  & NOAA-7 & AVHRR/2 & 08-1981 / 02-1985 \\
+NOAA-E  & NOAA-8 & AVHRR & 05-1983 / 10-1985 \\
+NOAA-F  & NOAA-9 & AVHRR/2 & 01-1985 / 01-1992 \\
+NOAA-G  & NOAA-10 & AVHRR & 11-1986 / 09-1991 \\
+NOAA-H  & NOAA-11 & AVHRR/2 &  11-1988 / 09-1994 \\
+NOAA-D  & NOAA-12 & AVHRR/2 & 09-1991 / 12-1994 \\
+NOAA-I  \tnote{*}  & - & -  & - \\
+NOAA-J & NOAA-14 & AVHRR/2 & 01-1995 / 10-2002 \\
+NOAA-K & NOAA-15 & AVHRR/3 & 05-1998 / 12-2010 \\
+NOAA-L & NOAA-16 & AVHRR/3 & 09-2000 / 12-2010 \\
+NOAA-M & NOAA-17 & AVHRR/3 & 06-2002 / 10-2010 \\
+NOAA-N & NOAA-18 & AVHRR/3 & 08-2005 / present \\
+NOAA-P & NOAA-19 & AVHRR/3 & 06-2009 / present \\
+MetOp-A & MetOp-M2 & AVHRR/3 & 06-2007 / present \\
+MetOp-B & MetOp-M1 & AVHRR/3 & 09-2012 / present \\
+\bottomrule \end{tabular}} \begin{tablenotes} \item[*] Not flown. \end{tablenotes} \end{threeparttable} 
+\label{names_of_spacecraft} 
+\end{table}
+
+\begin{table}[H]
+\caption{AVHRR channels and nominal band widths (\SIunits{\micro\meter}) from each detector type.}
+\centering
+{\begin{tabular}[c]{@{}cllllcl} \toprule
+Channel & TIROS-N & AVHRR & AVHRR/2 & AVHRR/3 & Detector & Channel Noise \\
+\midrule
+1 & 0.550 - 0.900 & 0.580 - 0.680 & 0.580 - 0.680 & 0.580 - 0.680 & Si & SNR $\ge$ 9:1 (0.5$\%$ albedo) \\
+2 & 0.725 - 1.100 & 0.725 - 1.100 & 0.725 - 1.100 & 0.725 - 1.000 & Si & SNR $\ge$ 9:1 (0.5$\%$ albedo)  \\
+3A & & & & 1.580 - 1.640 & InGaAs & SNR $\ge$ 20:1 (0.5$\%$ albedo) \\
+3B & 3.550 - 3.930 & 3.550 - 3.930 & 3.550 - 3.930 & 3.550 - 3.930 & InSb & NE$\Delta$T $\le$ 
+\SIunits{0.12}{\kelvin} @ \SIunits{300}{\kelvin} \\
+4 & 10.50 - 11.50 & 10.50 - 11.50 & 10.30 - 11.30 & 10.30 - 11.30 & HgCdTe & NE$\Delta$T $\le$ \SIunits{0.12}{\kelvin} @ \SIunits{300}{\kelvin} \\
+5 & \multicolumn{2}{c}{Channel 4 repeated in both} & 11.50 - 12.50 & 11.50 - 12.50 & HgCdTe & NE$\Delta$T $\le$ 
+\SIunits{0.12}{\kelvin} @ \SIunits{300}{\kelvin} \\
+\bottomrule \end{tabular}}
+\label{spectral_bands}
+\end{table}
+
+Over the range of AVHRR instruments, the detectors used in the thermal infrared part of the spectrum are an InSb based detector for channel 3B and an HgCdTe based detector for channels 4 and 5. The response of the InSb detector is, to a good approximation, linear, while the response of the HgCdTe detectors is nonlinear. This is due to the process of ``Auger recombination" \citep{walton_corrections_1998,van_der_ziel_1976}, which involves an increase of the rate of recombination of electron-hole pairs as the number density of electrons and holes increases with increasing incident radiance. \\
+
+The thermal channels (3B, 4 and 5) are calibrated in-flight using measurements of a internal warm calibration calibration target (ICT) and of space \citep{mittaz_avhrr_2009,mittaz_avhrr_2011}. 
+This allows for evaluation of the instrument response as it changes with time. The calibration cycle is undertaken during every full scan (at a frame rate of \SIunits{2}{\hertz} this corresponds to $\approx$12,000 scans for each of 14 orbits per day). On short time scales (sub-orbital), the calibration results are used to account for changes in the instrument response associated with variations in the operating temperatures, which vary by $\approx$ \SIunits{3}{\kelvin} around an orbit. As we shall see in Section \ref{noise_characteristics}, on longer time scales (e.g. the lifetime of the instrument), the response can change because of other factors including detector deterioration. 
+
+\subsection{Measurements}
+The basic quantity recorded is ``counts", a digital value that corresponds to the incident radiance. For global area coverage (GAC) processing of the AVHRR data considered here, frame rates are made directly compatible by only using the data from every third scan. The data are further reduced by averaging the value of four adjacent samples and skipping one sample of each channel of AVHRR data across each scan line \citep{goodrum_noaa_2007}. The orientation of the scan lines are perpendicular to the spacecraft orbit track and the speed of rotation of the scan mirror is selected so that adjacent scan lines are contiguous at the sub-satellite (nadir) position. Complete strip maps of the earth from pole to pole are thus obtained as the spacecraft travels in orbit at an altitude of approximately 833km. The analog data output from the sensors is digitized on board the satellite at a rate of 39,936 samples per second per channel. At this sampling rate, there are 1.362 samples per instantaneous field of view (IFOV) and a total of 2048 samples are obtained per channel per Earth scan spanning an angle of $\pm$\SIunits{55.4}{\degree} from nadir (sub-point view).\\
+
+%%% MD new paragraph
+There are 10 samples of space and ICT counts as measured by the radiometer in every AVHRR scan line. The average of the 10 samples is usually used for calibration. Four PRTs imbedded in the ICT are used to monitor its temperature. At each scan lines, three samples of counts of one of the four PRTs is provided. The Radiance of the ICT is deduced from its temperature \citep{goodrum_noaa_2007}. \\   
+%%%%%%%%%%%%%%%%
+A linear estimate of scene radiance for any given observation is obtained from the recorded counts via the following measurement equation:
+
+\begin{equation}
+% MD :Why L insted of R? If we keep L, we have to update all the equations 
+% MT: we are using L for radiance now in FIDUCEO. I've updated all of the equations.
+L_{linear}=\left(\frac{C_S-C_E}{C_S-C_{ICT}}\right)(L_{ICT}-L_S)+L_S+0
+\label{L_linear}
+\end{equation}
+
+Here, $C_E$ is the count observed when viewing the scene, which will either be an external calibration target in the case of the pre-launch calibration data, or the Earth for in-orbit data. $C_S$ is the space count and $L_S$ is the radiance of space. For channel 3B, $L_S$ is set to zero, but for channels 4 and 5, $L_S$ has a negative value determined from a fit to the pre-launch calibration data  \citep{walton_corrections_1998}. In all cases, $L_S$ is a constant for any given AVHRR. This rather odd concept of a negative space radiance is by design and was constructed in this way so that clouds in the original imagery appeared white on a dark background. $C_{ICT}$ is the count observed when viewing the internal warm calibration target (ICT) while $L_{ICT}$ is the ICT radiance. 
+
+While $L_{linear}$ is the correct linear radiance estimate for channel 3B, for the nonlinear channels (4 and 5), a further correction has to be made such that the response has the form:
+
+\begin{equation}
+L_{nonlinear}=b_0+b_1L_{linear}+b_2L_{linear}^2+0
+\label{L_nonlinear}
+\end{equation}
+
+The $+0$ term has been added to account for the model assumption of linearity in the case of channel 3B and nonlinearity in the case of channels 4 and 5. 
+
+Equations \ref{L_linear} and \ref{L_nonlinear} then are the measurement equations used to calibrate the thermal channels. They establish the basis for specifying and estimating all possible physical sources of uncertainty, the calculation of sensitivity coefficients and subsequent propagation of those uncertainties into the AVHRR FCDR and downstream retrievals. We refer the reader to the paper on the AVHRR FCDR generated by FIDUCEO for details of this approach \citep{mittaz_avhrr_2019}.
+
+Like $L_S$, the coefficients $b_0, b_1$ and $b_2$ are also determined from pre-launch calculations and are assumed to be constant over the lifetime of each instrument. In generating the FCDR, these calibration parameters are then updated for each AVHRR via harmonisation of all channel data of the inter-sensor data using a reference sensor and simultaneous nadir overpasses (SNO) \citep{giering_harmonisation_2019,hunt_harmonisation_2019}.
+During operation, all detectors are cooled to a temperature of \SIunits{105}{\,\kelvin} by a 2-stage passive radiance cooler to reduce detector noise and increase sensitivity. \\
+
+The electronics have been configured such that the counts reduce with increasing radiance. In order to maintain a dynamic range, the outputs from the space view are electronically clamped to a reference voltage. 
+% include value - of the reference voltage?
+% MD :Which one? 
+This means that the detected signal is implicitly the total radiance observed by the detectors at the time of observation minus the radiance observed by the detectors at the time of the clamp. The recorded counts are then digitised by conversion of the analogue detected signal to a 10-bit binary form within the instrument (2 parity bits are added to the 8-bit TIP word to form the 10-bit GAC word).\\
+
+
+% describe nonlinearity assumption & present plots from D2.2. 
+% MD : Done
+\subsection{Model assumption}
+The $+0$ term in eq. \ref{L_nonlinear} considers the following effects:
+\begin{itemize}
+\item Non-quadratic nonlinearity
+\item Variable nonlinearity coefficient
+\end{itemize}
+
+The model equation assumes that the quadratic function fully describes the conversion from counts to radiance. For the HgCdTe detectors, this may not be the case. 
+Estimates of the scale of both effects have been derived from a numerical model of an HgCdTe detector based one used for the GOES imager detectors (Bicknell 2000). The model determines the Auger recombination lifetimes of the carriers and hence variations in the predicted voltage seen for a given input photon flux and has been tuned to match the sort of photon fluxes and non-linearities seen in the AVHRR sensors. The top two plots of Figure 19 show the predicted deviation of the estimated brightness temperature using a quadratic measurement equation compared to the input brightness temperature and indicates that the quadratic assumption may be introducing and error of order a few milli-Kelvin, at least in terms of modeling the Auger recombination effect. 
+
+The second effect is related to the fact that nonlinearity of an HgCdTe detector is not itself a constant even though the AVHRR measurement equation assumes that it is. Again, this is a case where there is experimental evidence of the variation in the nonlinearity (see for example \citep{theocharous_practical_2006}. To study this variability,we have varied the self-emission component (parameterized by the instrument temperature) and tracked how the best fit quadratic term varies. This variation is shown in the lower panels of Figure 19 and shows over a 20 K variation in instrument temperature a variation of order 5 in the quadratic term.  Given that a typical AVHRR shows orbital temperature variations more like $\pm\,1$ degree this amounts to an approximately 0.4 change in the non-linear coefficient. For a 300K scene temperature and a typical instrument gain and nonlinearity this would correspond to an error of approximately $\pm\,0.006$ K which is of order the same size as shown for the non-quadratic error. \\
+Both estimates will be included as part of the uncertainty budget of the final FCDR.
+
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{figures/nonlinearity_detectors_ch4-5}
+\caption{Top two plots show the deviation from a quadratic model for an HgCdTe detector for the 11 and 12\SIunits{}{\micro\meter} channels using a theoretical model. This indicates that the deviation from a quadratic are at the milli-Kelvin level. The two lower plots show changes in the quadratic nonlinearity coefficient as a function of instrument temperature (a proxy for the total self-emission radiance) and indicates for a typical AVHRR orbit a variation of ~1\% change in the coefficient.  }
+\label{model_assumptions}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%
+% build bridge between the measurement equation, digitisation of counts and noise to introduce the next section
+%MD : Done
+From the AVHRR measurement equation as well as the calibration description, it is clear that there are a number of different noise sources that may be applicable for the AVHRR detectors including thermal noise, shot noise, noise generated by the electronics etc. The detectors have also their own noise characteristics. It is actually quite difficult to measure the noise directly for the AVHRR. This is because observations of known sources (either space or the ICT) only take 10 measurements at a time and, due to the variation of instrument temperature around an orbit, the total flux between measurements is not strictly constant. Further, the on-board digitisation is itself of the order of the noise, which again makes an accurate measurement of the detector noise difficult.  
+%%%%%%%%%%%%%%%%%%%%%%%5
+
+%%%%
+\section{Noise estimation and dynamic filtering}\label{calculate_uncertainties}
+%%%%
+%- How we calculate the NEDT, SP, ICT
+% ICT: we look at the distribution of  (count value & scan line mean)
+% MD : do we?
+% SP: is calculating accumulating all the SP views over an orbit (that is to say 10* number of scanline values) --> histograms of mean PRT temp scanline scale
+%MD : SP explained / for the PRT, indeed at the moment we are not mentioning their behaviour and so on. Maybe I can add a paragraph in section 5? 
+
+% Issues between SP and ICT noise measurements
+%\citet{barnes_deadtime_1987}
+
+%A characterisation of digitisation noise, Gaussian noise and periodic noise in the IR channels of the early version of the AVHRR/1 has been performed by \citep{dudhia_noise_1989} and an analysis of trends and uncertainties in the calibration data of the early versions of the AVHRR flying on NOAA-9 to NOAA-16 was performed by \citep{trishchenko_trends_2002}. 
+
+Determining the underlying noise characteristics from Level-1 is central to being able to provide both metrological uncertainties  as well as providing input into Monte-Carlo schemes used to propagate noise uncertainty. This section describes the different techniques used to determine estimates of the underlying noise and of the noise power spectrum for the visible and infrared channels of the AVHRR and the dynamical filtering approach adopted for outliers removal.
+
+\subsection{Noise estimation using the Allan deviation}
+A common way to evaluate the magnitude of noise in a time series $y_n$ is to calculate the standard deviation $\sigma$ as the square root of the variance. The unbiased estimate of population variance, given a sample of size $N$, is:
+
+\begin{equation}
+\sigma^2=\frac{1}{N-1}\sum_{n=1}^{N}(y_n-\left\langle {y}\right\rangle)^2
+\label{SD}
+\end{equation}
+
+\noindent for sample mean,
+
+\begin{equation}
+\left\langle {y}\right\rangle=\frac{1}{N}\sum_{n=1}^{N}y_n
+\end{equation}
+
+Since we are interested in quantifying the noise over the lifetime of each AVHRR instrument, we calculate a ``mean" noise by accumulating all space counts and IWCT counts over an orbit. %As a consequence of digitisation, 10 counts are provided per scan line for each space view and IWCT view.
+
+% quote digisation noise estimate provided by Dudhia 1989 here
+% MD : maybe we can quote it in Section 5.02 
+% Dudhia : digitisation noise = 1/12 ~ 0.29 counts 
+
+\begin{figure}[H]
+\centering
+\subfigure[Mean PRT temperature]{\resizebox*{7cm}{!}{\includegraphics{figures/Mean_prt_temperature_AVHRR19_G_12128_3_orbits}}}
+\subfigure[Mean ICT view counts]{\resizebox*{7cm}{!}{\includegraphics{figures/Mean_Bb_counts_AVHRR19_G_c_3_12128_3_orbits}}}\quad
+\caption{Mean PRT temperature (panel (a)) and mean ICT view counts (panel (b)) from the \SIunits{3,7}{\micro\meter} channel of the AVHRR on NOAA-19 for 3 orbits on the 7th of May, 2012. }
+\label{mean_bb_prt_over_3_orbits}
+\end{figure}
+
+However, as shown in panel (a) of Figure\,\ref{mean_bb_prt_over_3_orbits}, the radiometer temperature, measured from the mean of the four Platinum resistance thermistors (PRT) placed on the ICT, undulates with a characteristic herringbone-shaped pattern ($\approx$\SIunits{3}{\,\kelvin} peak-to-peak) caused by the satellite moving in and out of sunlight during an orbit. 
+
+Unlike the case of the space counts where the subtraction of the mean is done electronically through voltage clamping each scan line, the mean ICT view count per scan line is a function of the state of the local thermal environment of the detector. 
+% MD commented this senstence 15 01 19 
+%This responds adiabatically to solar blackbody contamination described by \citet{steyn-ross_avhrr_1994,cao_solar_2001} and analysed by \citet{trishchenko_method_2001}. 
+This also varies along the orbit as shown in panel (b) of Figure\,\ref{mean_bb_prt_over_3_orbits}). 
+
+This variation would contribute to the standard deviation estimated simply by Equation \ref{SD}, but it is not ``noise". As pointed out by \citet{tian_allan_2015} erroneous results like this are to be expected when the data used to estimate the noise contains underlying non-stationary processes (i.e. like orbitally-varying ICT view counts). 
+
+A better noise estimate for such non-stationary cases is the ``Allan" variance (or ``two-sample" variance) which is a particular form of the M-sample variance \citet{allan_1966,mittaz_noise_2016}:
+
+\begin{equation}
+\sigma_{Allan}^2=\frac{1}{2}\left\langle (y_{n+1}-y_n)^2\right\rangle
+\label{allan_variance}
+\end{equation}
+
+For each scan line, the 10 counts available for each space view or IWCT view mean that 9 values of $y_{n+1}-y_n$ can be used in equation \ref{allan_variance}. One of the strengths of the Allan variance is that when the mean value of the observations varies over time, it is not significantly affected as it is related the average of the difference between two successive measurements i.e. occurring on much shorter timescale than any longer term trends. The Allan deviation is therefore a more stable estimate of the local (temporal) noise. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=7cm]{figures/temporal_evolution_stdev_bb_and_allan_deviation_AVHRR19_G_c_3}
+\label{stdevandallanbb}
+\caption{Standard deviation and Allan deviation of the ICT view counts from the \SIunits{3.7}{\micro\meter} channel of AVHRR19\_G averaged over all orbits in May, 2012.}
+\label{stdevandallanbb}
+\end{figure}
+
+Figure \ref{stdevandallanbb} shows the temporal variation of the standard deviation (dots) and the Allan deviation (crosses) of IWCT counts measured from the \SIunits{3.7}{\micro\meter} channel of AVHRR-19 during the course of all orbits during May 2012. The standard deviation of the IWCT view counts varies between 3.5 and 5 counts on the scale of an individual orbit, while the Allan deviation is close to 0.4 counts for the entire month.
+
+\subsection{Noise simulations}
+Here we are considering how to estimate noise sources from Earth observation satellite data where it is common practice to estimate the instrument noise using simple statistics such as the mean and variance of sections of data. To determine the best way of determining variance and noise spectra we start by looking at simulated data.
+% add results from the techinical note on Allan deviation here
+% NB: Imke's discussion of the noise colour for the MW sensors
+%%%%%%%%%%% MD %%%%%%%%%%%%%%% 
+%I looked at this note. As we didn't do neither plan (?) to do this kind of analysis for all the sensors I am wondering if this make sense to add this part.   
+
+\subsection{Outlier removal via dynamic filtering}
+As part of the FIDUCEO project work has been undertaken to try and remove outliers in the IWCT and space view counts data as much as possible, prior to using the Allan deviation to calculate the noise estimates. We have used the Allan deviation to generate the statistics as this allows us to calculate the noise for both space and IWCT views in the same way \citep{mittaz_noise_2016}. These changes are now incorporated into the production of the new AVHRR FCDRs \citep{mittaz_avhrr_2019}. 
+
+The filtering is currently a combination of defined threshold tests together with comparison of local statistics including the sample mean and Allan deviation, for extra filtering. In order to apply dynamic filtering to the counts data, a 3-step procedure is implemented following the work of \citet{trishchenko_trends_2002}. To be specific, first coarse filtering is performed with reference to the median and subsequent removal of outliers that lie beyond three times the robust standard deviation. Fourier transform filtering is then applied to remove any residual trend. Figure \ref{dynamic_filter} demonstrates this.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=7cm]{figures/adaptive_filter}
+\caption{Outlier removal by application of robust filtering to space counts from the \SIunits{11}{\micro\meter} channel of AVHRR19\_G during 24 days in May, 2012.}
+\label{dynamic_filter}
+\end{figure}
+
+This dynamical filtering approach has been applied to both the visible/NIR and IR channels giving improvements to all AVHRR channels as well as noise estimates across the board. Examples of the improvements are shown below. Figure \ref{noaa09_vis_before_after} shows the difference between the SP view raw data and the filtered data for the two visible channels (at \SIunits{0.6}{\micro\meter} and at \SIunits{0.8}{\micro\meter}) on NOAA-09. The thresholding has a significant impact on both the measured signal as well as the noise estimates. Before the filtering the noise estimates show a very large range of values and it is difficult to see if there is any noise evolution for the visible channels. After filtering a clear increase in the noise over time is seen. The filtering also has an impact on the calculation of the mean space counts where clear outliers are removed. Note that the mean space view counts is one of the numbers used in the visible channel calibration so the removal of the outliers is important for the visible channel gain calculation.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=14cm]{figures/mean_counts_noaa09_before_after}
+\caption{Top line shows the noise estimates in Space view counts before and after outlier removal for the 0.6 micron channel and bottom line shows the same before and after for the mean (smoothed) counts values. The outlier removal improves both the noise estimates where clear trends can be seen after outlier removal as well as improvements to the mean value using in the visible channel calibration}
+\label{noaa09_vis_before_after}
+\end{figure}
+
+\subsection{The Noise Equivalent Error}
+Noise in brightness temperatures is usually expressed as NE$\Delta$T.
+The NE$\Delta$T can be derived from equation \ref{L_linear} and \ref{L_nonlinear} assuming statistical independence and normal distribution of noise in the SP, ICT and PRT measurements. We can write the uncertainty $\delta L_E$ as:
+
+\begin{equation}
+\begin{split}
+L_E=&L_{linear}+L_{nonlinear}\\
+       &=b_0+(b_1+1)L_{linear}+b_2L_{linear}^2+0\\
+\end{split}
+\end{equation}
+
+\begin{equation}
+\delta L_{E}=(b_1+1)\delta L_{linear}+2b_2\delta L_{linear}L_{linear}
+\end{equation}
+
+Since $b_1$ and $b_2$ are small, and given the equation of the linear radiance (Eq. \ref{L_linear}),
+we can write:
+
+% MT: I updated these equations to follow the FIDUCEO convention.
+
+\begin{equation}
+\delta L_{E}=\sqrt{(\frac{\partial L_{linear}}{\partial L_{ICT}})^2 \delta L^2_{ICT} +  (\frac{\partial L_{linear}}{\partial C_{ICT}})^2 \delta C^2_{ICT} + (\frac{\partial L_{linear}}{\partial C_{S}})^2 \delta C^2_{S} +(\frac{\partial L_{linear}}{\partial C_{E}})^2 \delta C^2_{E}}
+%\delta R_{E}=\sqrst{[(\frac{\partial R_{LIN}}{\partial R_{ICT}})^2 \delta R^2_{ICT} + (\frac{\partial R_{LIN}}{\partial C_{ICT}})^2 \delta C^2_{ICT} +(\frac{\partial R_{LIN}}{\partial C_{S}})^2 \delta C^2_{S} +(\frac{\partial R_{LIN}}{\partial C_{E}})^2 \delta C^2_{E}]}
+\end{equation}
+
+As a first approximation, we can estimate NE$\Delta$T  in the following way:
+\begin{equation}
+NE\Delta T  = \Delta SP\, .\, Gain \,\approx\, \Delta ICT\,.\,Gain
+\end{equation}
+
+As for the visible channels, the same dynamic filtering technique was applied to the IR channels. Figure \ref{noaa09_vis_before_after} shows the case for NOAA-07 which shows large variations in the noise for the \SIunits{3.7}{\micro\meter} channel. Here the noise is presented as the $NE\Delta T$ at 300K. As with the visible channel there is a significant improvement in the noise estimates where almost all outliers have been removed and again this will also impact the calibration (SP view and ICT view counts). The dashed red lines represent the design specification for the $NE\Delta T$ at 300K of 0.12 K. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=14cm]{figures/noaa07_nedt_before_after}
+\caption{The change in the noise estimates for both the space view data (black) and ICT view data (blue) for the \SIunits{3.7}{\micro\meter}, \SIunits{11}{\micro\meter} and \SIunits{12}{\micro\meter} channels before and after filtering. As with the visible channel data shown in Figure \ref{noaa09_vis_before_after} the filtering has a significant impact on the noise calculation and gives a much cleaner signal.}
+\label{noaa07_nedt_before_after}
+\end{figure}
+
+%%%%%%%%
+\section{Noise characteristics}
+\label{noise_characteristics}
+% MD : I guess the idea here is to actually describe the noise of each AVHRR. Consequently this section will probably change a lot.    
+%%%%%%%%
+In this section, we describe some characteristics of the noise for the AVHRR infrared channels.\
+
+\subsection{Temporal variation of the noise}
+For all the AVHRR, we observe a temporal variations of the temperature and the gain over the time, which is due to the instrument degradation and also to the fluctuation of the thermal state of the instrument (solar contamination and drift of the instrument). We can see on figure \ref{figure_avhrr_18_c3_c4} that the mean PRT temperature stays almost constant until 2013 when it starts to increase. The Gain, the noise of the SP and the NE$\Delta$T of the space counts are well correlated with the instrument temperature as they show the same trends. The gain determines the scale of transformation between instruments counts and physical quantities. Consequently, a higher absolute value of the gain involves a lower sensibility to the incoming radiance.  Justify why the noise increase with the temperature\
+
+We also notice that the noise of the ICT remain constant over the time and is not correlated with the PRT temperature. This difference of behaviour between the SP and the ICT might be linked to the absence of clamping for the internal calibration target views.
+
+\begin{figure}[H]
+\centering
+\subfigure{\includegraphics[width=7cm]{figures/figure_AVHRR18_c3}}
+\subfigure{\includegraphics[width=7cm]{figures/figure_AVHRR18_c4}}\quad
+\caption{Mean PRT temperature (panel (a) ), gain (panel (b) ), noise of the Space and ICT view counts (panel (c) ) and Noise Equivalent Error (panel (d) ) over the lifetime of the AVHRR on NOAA-18 for the channels at \SIunits{3.7}{\micro\meter} (left panels) and  \SIunits{11}{\micro\meter} (right panels).}
+\label{figure_avhrr_18_c3_c4}
+\end{figure}
+
+\subsection{Spectral variation of the noise}
+Another characteristic of the AVHRR is that the different channels have different noise. The \SIunits{3.7}{\micro\meter} channel in particular, is much more noisy than the \SIunits{11-12}{\micro\meter} channels. This can be explained by different origins of the noise for the different channels. For example, the solar contamination contaminates mainly the \SIunits{3.7}{\micro\meter}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=7cm]{figures/3_7_micron_noise_AVHRR09_G}
+\caption{Striping in brightness temperature on $\textnormal{AVHRR-09\_G}$ as a result of noise in the \SIunits{3.7}{\micro\meter} channel.}
+\label{figure_striping}
+\end{figure}
+
+It is also important to be aware that different versions of the sensor have different behaviours. For instance, TIROS-N is very noisy, as we can see two different regimes within an orbit in figure \ref{figure_tirosn}. This makes it difficult to determine a pertinent threshold. 
+
+\begin{figure}[H]
+\centering
+\subfigure[SP view counts]{\includegraphics[width=7cm]{figures/Space_counts_and_std_per_scanline_over_time_AVHRRTN_G_c_3_79038_1_orbits}}
+\subfigure[ICT view counts]{\includegraphics[width=7cm]{figures/bb_counts_and_std_per_scanline_over_time_AVHRRTN_G_c_3_79038_1_orbits}}\quad
+\caption{SP view counts (panel (a)) and ICT view counts (panel (b)) from the \SIunits{3,7}{\micro\meter}channel of the AVHRR during a single orbit of TIROS-N on the 7th of February, 1979.}
+\label{figure_tirosn}
+\end{figure}
+
+% cross-talk and inter-channel noise correlation --> plots + discussion
+
+In Table\,\ref{noise_characterisation} we summarise anomalous temporal noise features observed across all sensor series.
+
+%\begin{sidewaystable}
+\renewcommand{\tabcolsep}{1pt} 
+\begin{table}[H]
+\begin{threeparttable}
+\caption{Noise characterisation}
+\begin{tabular}{cccccccl}
+\toprule
+ Pre-launch \\ name & $\overline{NE\Delta T_{3.7}}_{warm}$ & $\overline{NE\Delta T_{3.7}}_{cold}$  & $\overline{NE\Delta T_{11}}_{warm}$ & $\overline{NE\Delta T_{11}}_{cold}$ & $\overline{NE\Delta T_{12}}_{warm}$ & $\overline{NE\Delta T_{12}}_{cold}$ & Features \\
+\midrule
+TIROS-N & 0.0680 & 0.0420 & 0.1510 & 0.1140 & - & -                      & Noise varies over orbit \tnote{1} \\
+NOAA-6 & 0.0019 & 0.0018 & 0.1240 & 0.1120 & - & -                   & Noise stable over time \tnote{2} \\
+NOAA-7 & 0.0060  & 0.0050 & 0.0600  & 0.0370 & 0.0870 & 0.0740       & Noise affected by outgassing \tnote{3} \\
+NOAA-8 & 0.0050 & 0.0046 & 0.0640 & 0.0610 & - & -                     & Noise stable at \SIunits{11}{\micro\meter} \tnote{4} \\
+NOAA-9 & 0.0032 & 0.0031 & 0.0650 & 0.0420 & 0.1350 & 0.0870 & - \\
+NOAA-10 & 0.0024 & 0.0024 & 0.0560 & 0.5510 & - & - & Noise variable at \SIunits{3.7}{\micro\meter} \tnote{5} \\
+NOAA-11 & 0.0030 & 0.0026 & 0.0610 & 0.0160 & 0.0880 & 0.0850 & Noise very stable \tnote{6} \\
+NOAA-12 & 0.0031 & 0.0032 & 0.0920 & 0.0750 & 0.0910 & 0.0810 & Noise stable for all channels \tnote{7} \\ 
+NOAA-14 &  & & & & & & - \\
+NOAA-15 &   & & & & & & - \\
+NOAA-16 &   & & & & & & - \\
+NOAA-17 & 0.0073 & 0.0079 & 0.0680 & 0.0940 & 0.0880 & 0.0970 & - \\
+NOAA-18 & 0.0012 & 0.0012 & 0.0680 & 0.0830 & 0.0870 & 0.0930 & Noise stable over time \tnote{8} \\
+NOAA-19 & 0.0011 & 0.0013 & 0.0630 & 0.0870 & 0.0910 & 0.1050 & Noise stable over time \tnote{9} \\ 
+MetOp-M1 & 0.0003 & 0.0002 & 0.0680 & 0.0910 & 0.0880 & 0.0850 & - \\
+MetOp-M2 &  & & & & & & - \\
+\bottomrule
+\end{tabular}
+
+\begin{tablenotes}
+	\item[1] There are two distinct orbital regimes. \vspace{0.5ex}
+	\item[2] There is an increase in noise in June 1981 for the \SIunits{3.7}{\micro\meter} channel. \vspace{0.5ex}
+	\item[3] $NE\Delta T_{3.7}$ variations follow the dates of the instrument outgassing. \vspace{0.5ex}
+	\item[4] Noise increases strongly in 1983-1984 for the \SIunits{3.7}{\micro\meter} channel \vspace{0.5ex}
+	\item[5] SP noise < ICT noise but reverses after mid-1988. Peaks in the \SIunits{11}{\micro\meter} channel in March 1988, 1989 and 1990. \vspace{0.5ex}
+	\item[6] There are several short events that affect the \SIunits{3.7}{\micro\meter} channel in the same way. \vspace{0.5ex}
+	\item[7] An event is seen to affect the noise of the \SIunits{3.7}{\micro\meter} channel. \vspace{0.5ex}
+	\item[8] Odd gain behaviour for the \SIunits{3.7}{\micro\meter} and \SIunits{11}{\micro\meter} channels with decreasing absolute value. \vspace{0.5ex}
+	\item[9] Odd gain behaviour for the \SIunits{3.7}{\micro\meter} channel with decreasing absolute value. SP noise increases by 0.3-0.7. \vspace{0.5ex}
+\end{tablenotes}
+\end{threeparttable}
+\label{noise_characterisation}
+%\end{sidewaystable}
+\end{table}
+
+% Plots of all instruments/channels noise characteristics
+
+\subsection{Which noise is representative of the scene?}
+% discussion & hypothesis regarding space count noise and IWCT (blackbody) count noise as most representative of Earth scene counts noise for homogeneous (clear sky over ocean) scenes.
+% role of clamping?
+% noise hysteresis as a result of thermal shocks resulting from out-gassing?
+
+
+%%%%
+%\section{Noise traceability and metrological considerations}\label{noise_metrology}
+\section{Attribution of the noise to physical effects}
+%%%%
+% MD : As discussed I comment this subsection, also the different behaviours of the different detectors is not discussed in Sect.2.3
+%\subsection{Optoelectronics considerations of the detectors}
+%As shown in Table \ref{spectral_bands}, depending on the version of the AVHRR, the instrument contains different detectors that have been optimised for the visible or infrared parts of the electromagnetic spectrum. In the visible channels (1 and 2), Silicon (Si) detectors are sensitive throughout the visible up to wavelengths corresponding to the Si bandgap of $\approx$\SIunits{1.1}{\micro\meter}. The short-wavelength infrared (SWIR) channel 3(A) uses an InGaAs detector that is prevalent in fiberoptic telecommunications at $\approx$\SIunits{1.3 - 1.7}{\micro\meter} but which is limited to the near-infrared since, even by varying the composition the bandgap, it can only be shifted to as long as \SIunits{2.6}{\micro\meter}. For this reason, channel 3(B) in the mid-wavelength infrared (MWIR) is an Indium Antimonide (InSb) detector which has a bandgap of about \SIunits{5.4}{\micro\meter} at 77 K. For the long-wavelength infrared (LWIR) channels 4 and 5, a Mercury Cadmium Telluride (HgCdTe) detector is used as it is a ternary compound whose bandgap can be adjusted by varying the relative proportions of mercury (Hg) and cadmium (Cd). HgCdTe is a pseudobinary alloy $Hg_{1?x}Cd_{x}Te$ and the composition range $0.21 < x < 0.26$ means that this detector is able to cover the LWIR regime. For this important detector, Tennant \citet{tennant_rule7_2008} presented a reliable empirical result, known as Rule 07 that provides a characterization of dark current, which limits detector response at low irradiance as a function of bandgap and temperature in these high quantum efficiency devices. While, at short wavelengths increased noise results from a deviation between optical and electrical bandgaps, substantial efforts are being made to reduce the Auger recombination in the new so-called HOT sensors \citet{schuster_auger_2016}, it does not appear likely that much further improvement is available in present material and device configurations. 
+
+Noise can arise in a number of different physical process. There will be noise from the detector itself which can be related to a range of physical causes including but not limited to thermal noise (itself related to the detector operating temperature), shot noise (related to the number of photons hitting the detector at any one time). There will be low frequency noise from the readout electronics which often will have a characteristic noise spectrum of (1/f). There will be noise from high frequency temperature fluctuations that change the parameters of the device (e.g. the dark current). There is noise due to detector design and material properties such as impurity ionisation-associated noise (e.g. Barkhuesen noise). There can also be cross-talk where either an extraneous signal is introduced into the observed signal or one channels signal can cross-over and contaminate another channel giving rise to correlations between channels.
+
+In the case of the AVHRR all of the above effects have been seen, In particular the \SIunits{3.7}{\micro\meter} channel has shown a strong time dependent noise term whose noise spectrum is close to (1/f) \citep{mittaz_noise_2016}. This indicates that much of the noise in the \SIunits{3.7}{\micro\meter} channel arises in the electronics and there is further support for this from the AVHRR on TIROS-N. In the case of TIROS-N it has been known since it was launched that the noise was highly variable within an orbit and this was fixed in subsequent AVHRRs by changing the design of the electronics. TIROS-N also shows evidence for a strong cross-talk signal which again was significantly reduced when the electronics was redesigned.
+
+\subsection{Photon statistics and shot noise}
+There is noise associated with the signal itself. Since photodetection is a discrete process, and most natural sources exhibit Poisson statistics in the fluctuations of the signal level, this photon noise scales as the square root of the signal level and sets a fundamental noise floor. Any background photons impinging on the detector also contribute to the noise. While the background is usually not an issue in the UV and visible, in the infrared there is substantial background flux associated with blackbody emission from scenes at TOA temperatures (e.g. the peak of the 300 K blackbody emission is in the middle of the LWIR at \SIunits{10}{\micro\meter}). For cooled infrared detectors this ``dark current" associated with the background radiation and the accompanying noise levels, sets the detection limit and is known as background-limited infrared photodetection (BLIP). There are many scenarios other than looking at a terrestrial scene, and these have other, often more sensitive, BLIP limits. For example, looking up, a cold sky has a lower BLIP limit, requiring lower detector noise, and space-based cross-link applications have very low backgrounds. There is increasing interest in multispectral and hyperspectral sensing. The spectral filtration inherent in these concepts also reduces the background contribution to the noise. Detectors are inherently biased under operating conditions since they exhibit some dark current even in the absence of illumination which is typically proportional to pixel area. Since the dark current is carried by discrete charges (electrons and holes), there is shot noise scaling as associated with this dark current. 
+(from statistical variations in the number of carriers which is itself a function of flux)
+
+
+
+
+
+\subsection{Digitisation noise}
+
+Already studied by \citep{dudhia_noise_1989}, this noise corresponds to the rounding error due to the digitization of the telemetry signal that implies representing the true radiance in discrete steps. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=7cm]{digit.png}
+\caption{Space counts histograms indicating the detector noise in the AVHRR for an orbit taken during the 1st of June, 2002.}
+\label{digitisation_issue}
+\end{figure}
+
+As an example of this issue, Figure \ref{digitisation_issue} shows histograms based on integrating the space view counts over a single orbit (about 1.5 hours). It can be seen that the width of the distribution is of the order of the digitisation step, making it hard to determine the underlying distribution. As estimate can be made assuming Gaussian statistics as the Gaussian parameters (height, center and standard deviation) can be fit to the histograms including digitisation. If this is done for the above histograms as well as others derived at different times an estimate of the underlying Gaussian standard deviation can be derived (see Table \ref{digit_noise}).  It can then be seen that these noise estimates are (in count space) always less than the digitisation step.
+
+\begin{table}[H]
+{\begin{tabular}[c]{@{}llll}
+\toprule
+Channel (\SIunits{}{\micro\meter}) &	3.7	& 11 & 12 \\
+\midrule
+2002/06/01	&&&\\
+Detector noise	& 0.405	& 0.430	& 0.680 \\
+Standard Deviation	& 0.516	& 0.594	& 0.770 \\
+2004/06/01	&&&\\			
+Detector noise	& 0.425	& 0.472	& 0.679 \\
+Standard Deviation	& 0.542	& 0.593	& 0.775 \\
+2010/06/01	&&&\\			
+Detector noise	& 0.496	& 0.577	& 0.729 \\
+Standard Deviation	& 0.590	& 0.616	& 0.785 \\
+\bottomrule 
+\end{tabular}}
+\caption{Noise in counts for the NOAA-16 AVHRR.  Detector noise is the estimated underlying (pre-digitisation) noise and the standard deviation is the noise including digitisation.  The noise estimates for three different epochs are given.}
+\label{digit_noise}
+\end{table}
+
+Table \ref{digit noise} also shows some evidence for an increase in the noise over time. 
+ 
+\subsection{Noise due to the electronics}
+It turns out that the state of electronics plays an important role in the noise characteristics, at least for the early AVHRRs. It is well known that for the first AVHRR of the series, TIROS-N, the noise varied significantly around the orbit with something approximating to a day/night variation. This is shown on Figure \ref{figure_tirosn}. This was fixed in subsequent AVHRRs by changing the design of the electronics.  
+However, the following AVHRRs have still their noise impacted by the electronics. Indeed, Figure \ref{noaa07_nedt_before_after} shows an example for NOAA-07 where the noise increases to a large value for the \SIunits{3.7}{\micro\meter} channel and then drops back down abruptly at the end of September 1983. At this point the instrument was outgassed and the IR sensors were turned off effectively resetting everything. This behaviour therefore indicates that the noise is not dependent on the physical state of the detector or of the incident flux levels but is related to something else on-board such as the electronics. This is also supported by the fact that for the AVHRR/3 sensors the electronics were redesigned and similar noise patterns were not seen. %MD note to myself: find a ref
+ 
+\subsection{Pre-flight characterisation}
+% MD : not sure to know what to put here
+\subsection{Instrument degradation}
+
+\subsection{thermal noise}
+related to the detector temperature which as mentioned above for the AVHRR is held constant.
+% MD : do we have more stuff to say? if not maybe include this in another place?
+
+
+\subsection{PRT noise}
+we have performed a detailed study of the PRT noise which appears to be constant over time and for all versions of the AVHRR. Its value is close to 0.3 counts or 0.015K as can be seen in Figure \ref{prt_noise} for NOAA-07. 
+\begin{figure}
+\centering
+\includegraphics[width=7cm]{figures/prt_noise_noaa7.png}
+\caption{Noise of the four individuals PRT for NOAA-07, in temperature. The noise is estimated by calculating the Allan deviation of all the PRT measurements over an orbit.}
+\label{prt_noise}
+\end{figure}
+
+\subsection{Solar contamination}
+
+\subsection{Thermal state of the detector}
+\subsection{Readout noise}
+%Very low power monolithic high-speed analog-to-digital converters have advanced the state-of-the-art noise performance in IR sensors. 
+\subsection{Gain variations and amplifier efficiency}
+
+\section{FIDUCEO}
+A strong assumption is that these noise sources are in general uncorrelated such that the total noise is proportional to the square root of the sum of the squares of the individual noise sources. This is where metrology and traceability come to the fore.
+
+The work is part of a Horizon 2020 project ``Fidelity and Uncertainty in Climate data records from Earth Observatons" (FIDUCEO: \url{www.fiduceo.eu}) that is applying the techniques of metrology to satellite Level-1 (FCDR) and Level-2 (CDR) datasets from historic sensors including the AVHRR. At its core is the science of measurement, metrology which: 
+
+\begin{itemize}
+	\item defines internationally accepted units of measurement (i.e. SI),
+	\item provides a realisation of these units in practice, and
+	\item provides traceability linking measurements to a reference standard (i.e. justification).
+\end{itemize}
+
+Since a measurement can be related to a reference through a documented, unbroken chain of calibrations, each contributing to the measurement uncertainty, this forces a consideration of all possible sources of error and how they link together. Obtaining the uncertainties therefore also means removing all known sources of systematic error (GUM 2008:  Section 3.2.4), i.e. this assumes that the result of a measurement has been corrected for all recognised significant systematic effects, and that every effort has been made to identify such effects. The process of removing known systematic errors consequently improves the data and delivers a set traceable uncertainties that are also justifiable. This is pertinent to ECVs (like the SST CDR retrieved from AVHRR Level-1 radiances) since operational data is known to contain significant biases.
+
+FIDUCEO calculates independent (random) and structured (non-random) uncertainties on the Level-1 radiances together with covariances and error correlation information (e.g. a typical spatial scale). 
+% plots from MT
+
+\subsection{Noise uncertainty and FCDRs}
+In a separate paper in this Special Issue, we present the AVHRR FCDR and the temporal variation of independent uncertainty on brightness temperature which detector noise plays a significant role in shaping. 
+
+As we have shown the detector noise can be described as generally random and temporally variable in nature, particularly for the \SIunits{3.7}{\micro\meter} channel. Figure \ref{figure_ch3_counts_NEDT} shows how this behaviour in counts noise creates an analogous linear response in $NE\Delta T$ that challenges the assumption of a constant noise level in the pre-launch calibration.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=7cm]{figures/noaa09_ch3_counts_nedt}
+\caption{Random but temporal variation in counts noise creating a linear response in $NE\Delta T$ that challenges the assumption of a constant noise level in the pre-launch calibration.}
+\label{figure_ch3_counts_nedt}
+\end{figure}
+
+\subsection{Walton calibration and thermal environment changes}
+The Walton calibration (Walton et al. 1998) is the current operational calibration for the modern AVHRRs. Parameters are also available for the complete AVHRR series from the CSPP (Community Satellite Processing Package http://cimss.ssec.wisc.edu/cspp/) and have been incorporated into the new AVHRR FCDRs generated by FIDUCEO. 
+
+It is known, however, that the Walton calibration is biased when compared to a reference sensor (e.g. Mittaz \& Harris (2011), Mittaz et al. (2013)). The bias occurs in a number of ways. First, because of changes in the instrument performance between the pre-launch and in-orbit environments there is a strong (of order $\pm 0.5K$) scene temperature dependent bias. Second, and from the point of a fundamental climate data record, more important is a large time dependent bias which is thought to be related to changes in the satellites thermal environment as the orbit drifts over time. The new AVHRR processing code corrects for the slow observed drift over time as the satellite orbit changes and/or the Earth-Sun distance/Solar angles change. The importance of the removal of such trends is demonstrated in Figure \ref{figure_sst_versus_orbital_temp} which is based on a version of Pathfinder where the Pathfinder BT correction was fixed at the beginning of the NOAA-16 mission via latitudinal bands - note that this version of Pathfinder was never completed but was part of work towards Pathfinder v6.0 - the current latest and last official version is actually v5.3 which will be the last version ever produced.
+
+\begin{figure}[H]
+\centering
+\subfigure[Pathfinder v6 SST and drifting buoy data]{\includegraphics[width=7cm]{figures/noaa16_sst_buoy}}
+\subfigure[Orbital temperature]{\includegraphics[width=7cm]{figures/noaa16_orbital_temperature}}\quad
+\caption{Top plot shows the Pathfinder v6 SST data compared to drifting buoys and shows a very strong and characteristic bias in the Pathfinder v6 SST. Bottom plot shows the NOAA-16 instrument temperature for the same period and it can be seen that the SST bias actually closely anti-correlates with the instrument temperature. The SST bias introduced is up to approximately 0.5K}
+\label{figure_sst_versus_orbital_temp}
+\end{figure}
+
+To model this effect over all AVHRRs here we have compared the observed radiances with radiative transfer modeled radiances (from ERA Interim with RTTOV) taken under 'ultra clear sky' conditions. In this case 'ultra clear sky' means that the Bayesian clear sky probability derived by the current version of the GBCS is > 0.98 for all pixels in a 7x7 window centred on an in-situ location (within CCI this is from MMD4). Effectively this means that we are using RTM as a time stable reference - note that we are not using RTM as an absolute reference for the calibration.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=14cm]{figures/walton_behaviours_avhrr2}
+\caption{Comparing the observed Walton radiances with RTM for the \SIunits{11}{\micro\meter} channel for the AVHRR/2 sensors. Note the range of behaviours.}
+\label{walton_behaviours_avhrr2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=14cm]{figures/walton_behaviours_avhrr3}
+\caption{Same as Figure \ref{walton_behaviours_avhrr2} but for the AVHRR/3 sensors. For the AVHRR/3 sensors there are more cases where there are multiple time windows due to changes in behaviour.}
+\label{walton_behaviours_avhrr3}
+\end{figure}
+
+Figure \ref{walton_behaviours_avhrr2} shows the sort of behaviour seen for the \SIunits{11}{\micro\meter} channel for the AVHRR/2 sensors and Figure \ref{walton_behaviours_avhrr3} shows the equivalent for the AVHRR/3 sensors. Looking at Figures \ref{ walton_behaviours_avhrr2} and \ref{walton_behaviours_avhrr3} it can been seen that there are different behaviours for different instruments. Simply put the models can be categorised into three main types:
+
+\begin{enumerate}
+	\item Polynomial model as a function of instrument (orbital average) temperature
+	\item Two linear models with a break at a given instrument temperature
+	\item Three linear models with breaks at assigned temperatures
+\end{enumerate}
+
+On top of this is the fact that there is an expectation that the behaviour (model) will change over time so there is the allowance of having different models for different time periods. In the plots these are indicated by different colours. In Figure \ref{walton_temporal_zones} for the AVHRR/3 set of sensors, the instrument temperatures themselves are shown with bars indicating the different windows used for the different models. It can be seen that the different windows correspond to changes in the behaviours of the instrument temperatures.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=14cm]{figures/walton_temporal_zones}
+\caption{Instrument temperature versus time for the AVHRR/3s. Also shown on the plots are the different time ranges denoted by the different coloured bars which correspond to the different models seen in Figure \ref{walton_behaviours_avhrr3}.}
+\label{walton_temporal_zones}
+\end{figure}
+
+%%%%
+\section{Discussion}
+\label{discussion}
+%%%%
+Authors should discuss the results and how they can be interpreted in perspective of previous studies and of the working hypotheses. The findings and their implications should be discussed in the broadest context possible. Future research directions may also be highlighted.
+
+%%%%
+\section{Conclusions}
+\label{conclusion}
+%%%%
+In this paper, we describe and discuss the noise characteristics of different channels of each of the AVHRR sensors and assess their uncertainties. We have shown how the \SIunits{3.7}{\micro\meter} channel in particular, is much more variable than the thermal infrared channels at \SIunits{11}{\micro\meter} and  \SIunits{12}{\micro\meter}. We also observe that different sensors have different behaviours both in the temporal and spectral domains. TIROS-N noise behaviour has noise that changes systematically within an orbit.
+ 
+\vspace{6pt} 
+
+\dataset{The level-1B data from AVHRR presented in this manuscript are available from NOAA CLASS (Comprehensive Large Array-data Stewardship System)}
+
+\authorcontributions{MD, JPDM and MT investigated the gain and noise characteristics, JPDM investigated the Allan deviation and statistics required to measure the noise, CJM contributed to the text and helped with the interpretation and presentation of the results. MD and MT prepared the manuscript with contributions from all co-authors.}
+%The authors contributed to this work as follows: ??conceptualization, MD and MT; methodology, MD, JPDM and CJM; software, MD, JPDM and MT; validation, MD, JPDM and MT; formal analysis, JPDM and MT; investigation, MD and JPDM; resources, MD and MT; data curation, MD, JPDM and MT; writing & original draft preparation, MD, JPDM, MT and CJM; writing ??review and editing, MD, JPDM, MT and CJM; visualization, MD, JPDM and MT; supervision, JPDM and CJM; project administration, JPDM and CJM; funding acquisition, JPDM and CJM}
+
+\funding{This work is part of the effort to quantify the uncertainty budget for the AVHRR undertaken within the H2020 project, Fidelity and Uncertainty in Climate data records from Earth Observation (FIDUCEO). FIDUCEO has received funding from the European Union?s Horizon 2020 Programme for Research and Innovation, under grant  agreement no. 638822.}
+
+\acknowledgments{
+The authors would like to acknowledge Emma Woolliams at the National Physical Laboratory (NPL) for providing metrology support. We  are indebted to Gerrit Holl and Rhona Phipps at the University of Reading for useful discussion and internal review.}
+
+\conflictsofinterest{The authors declare that they have no conflict of interest. The founding sponsors had no role in the design of the study; in the collection, analyses, or interpretation of data; in the writing of the manuscript, or in the decision to publish the results.} 
+
+\abbreviations{The following abbreviations are used in this manuscript:\\
+\noindent \begin{tabular}{@{}ll}
+AOD & Aerosol Optical Depth \\
+AVHRR & Advanced Very High Resolution Radiometer \\
+CH & Channel \\
+CLASS & Comprehensive Large-Array Stewardship System \\
+CPIDS & Calibration Parameters Instrument Data Set \\
+ESA & European Space Agency \\
+EUMETSAT & European Organisation for the Exploitation of Meteorological Satellites \\
+FCDR & Fundamental Climate Data Record \\
+FIDUCEO & Fidelity and Uncertainty in Climate data records from Earth Observations \\
+GAC & Global Area Coverage \\
+ICT & Internal Calibration Target \\
+IFOV & Instantaneous Field Of View \\
+METOP & Meteorological Operational (satellites) \\
+NCC & National Calibration Centre \\
+NDVI & Normalised Difference Vegetation Index \\
+NE$\Delta$T & Noise Equivalent Error \\
+NESDIS & National Environmental Satellite, Data and Information Service \\
+NOAA & National Oceanic and Atmospheric Administration \\
+NORAD & North American Aerospace Defence Command \\
+NPL & National Physical Laboratory \\
+NWP & Numerical Weather Prediction \\
+PRT & Platinum Resistance Thermistor \\
+SP & Deep Space (view)  \\
+SST & Sea Surface Temperature \\
+TIROS & Television Infrared Observation Satellite \\
+STAR & Centre for Satellite Applications and Research \\
+UOR & University of Reading \\
+UTC & Coordinated Universal Time
+\end{tabular}}
+
+\reftitle{References}
+\externalbibliography{yes}
+\bibliography{avhrr_library}
+
+\end{document}
+
+
+

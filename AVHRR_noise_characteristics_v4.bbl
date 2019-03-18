@@ -1,0 +1,159 @@
+\begin{thebibliography}{-------}
+\providecommand{\natexlab}[1]{#1}
+
+\bibitem[Cracknell(1997)]{cracknell_advanced_1997}
+Cracknell, A.P.
+\newblock {\em The advanced very high resolution radiometer ({AVHRR})}; Taylor
+  \& Francis: London ; Bristol, PA,  1997.
+
+\bibitem[Trishchenko(2009)]{trishchenko_effects_2009}
+Trishchenko, A.P.
+\newblock Effects of spectral response function on surface reflectance and
+  {NDVI} measured with moderate resolution satellite sensors: {Extension} to
+  {AVHRR} {NOAA}-17, 18 and {METOP}-{A}.
+\newblock {\em Remote Sensing of Environment} {\bf 2009}, {\em 113},~335--341.
+\newblock
+  doi:{\changeurlcolor{black}\href{https://doi.org/10.1016/j.rse.2008.10.002}{\detokenize{10.1016/j.rse.2008.10.002}}}.
+
+\bibitem[Kidwell(1997)]{kidwell_noaa_1997}
+Kidwell, K.
+\newblock {\em {NOAA} {Global} {Vegetation} {Index}: {User}'s {Guide}}; U.S.
+  Department of Commerce, National Oceanic and Atmospheric Administration,
+  1997.
+
+\bibitem[Kawamoto \em{et~al.}(2001)Kawamoto, Nakajima, and
+  Nakajima]{kawamoto_global_2001}
+Kawamoto, K.; Nakajima, T.; Nakajima, T.Y.
+\newblock A {Global} {Determination} of {Cloud} {Microphysics} with {AVHRR}
+  {Remote} {Sensing}.
+\newblock {\em Journal of Climate} {\bf 2001}, {\em 14},~2054--2068.
+\newblock
+  doi:{\changeurlcolor{black}\href{https://doi.org/10.1175/1520-0442(2001)014<2054:AGDOCM>2.0.CO;2}{\detokenize{10.1175/1520-0442(2001)014<2054:AGDOCM>2.0.CO;2}}}.
+
+\bibitem[Stowe \em{et~al.}(1991)Stowe, McClain, Carey, Pellegrino, Gutman,
+  Davis, Long, and Hart]{stowe_global_1991}
+Stowe, L.; McClain, E.; Carey, R.; Pellegrino, P.; Gutman, G.; Davis, P.; Long,
+  C.; Hart, S.
+\newblock Global distribution of cloud cover derived from {NOAA}/{AVHRR}
+  operational satellite data.
+\newblock {\em Advances in Space Research} {\bf 1991}, {\em 11},~51--54.
+\newblock
+  doi:{\changeurlcolor{black}\href{https://doi.org/10.1016/0273-1177(91)90402-6}{\detokenize{10.1016/0273-1177(91)90402-6}}}.
+
+\bibitem[Ignatov \em{et~al.}(2004)Ignatov, Sapper, Cox, Laszlo, Nalli, and
+  Kidwell]{ignatov_operational_2004}
+Ignatov, A.; Sapper, J.; Cox, S.; Laszlo, I.; Nalli, N.R.; Kidwell, K.B.
+\newblock Operational {Aerosol} {Observations} ({AEROBS}) from {AVHRR}/3 {On}
+  {Board} {NOAA}-{KLM} {Satellites}.
+\newblock {\em Journal of Atmospheric and Oceanic Technology} {\bf 2004}, {\em
+  21},~3--26.
+
+\bibitem[Li \em{et~al.}(2001)Li, Kaufman, Itchoku, Fraser, Trishchenko, Giglio,
+  Jin, and Yu]{li_review_2001}
+Li, Z.; Kaufman, Y.J.; Itchoku, C.; Fraser, R.; Trishchenko, A.P.; Giglio, L.;
+  Jin, J.; Yu, X.
+\newblock A review of {AVHRR}-based active fire detection algorithms:
+  {Principles}, limitations and recommendations. In {\em Global and {Regional}
+  {Vegetation} fire monitoring from space : {Planning} and coordinated
+  {International} {Effort}}; Ahern, F.; Goldammer, J.G.; Justice, C., Eds.;
+  {SPB} {Academic} {Publishing}: The Hague, The Netherlands,  2001; pp.
+  199--225.
+
+\bibitem[Kilpatrick \em{et~al.}(2001)Kilpatrick, Podestá, and
+  Evans]{kilpatrick_overview_2001}
+Kilpatrick, K.A.; Podestá, G.P.; Evans, R.
+\newblock Overview of the {NOAA}/{NASA} advanced very high resolution
+  radiometer {Pathfinder} algorithm for sea surface temperature and associated
+  matchup database.
+\newblock {\em Journal of Geophysical Research: Oceans} {\bf 2001}, {\em
+  106},~9179--9197.
+\newblock
+  doi:{\changeurlcolor{black}\href{https://doi.org/10.1029/1999JC000065}{\detokenize{10.1029/1999JC000065}}}.
+
+\bibitem[Dudhia(1989)]{dudhia_noise_1989}
+Dudhia, A.
+\newblock Noise characteristics of the AVHRR infrared channels.
+\newblock {\em International Journal of Remote Sensing} {\bf 1989}, {\em
+  10},~637--644.
+
+\bibitem[Trishchenko \em{et~al.}(2002)Trishchenko, Fedosejevs, Li, and
+  Cihlar]{trishchenko_trends_2002}
+Trishchenko, A.P.; Fedosejevs, G.; Li, Z.; Cihlar, J.
+\newblock Trends and uncertainties in thermal calibration of {AVHRR}
+  radiometers onboard {NOAA}-9 to {NOAA}-16.
+\newblock {\em Journal of Geophysical Research: Atmospheres} {\bf 2002}, {\em
+  107},~ACL 17--1.
+\newblock
+  doi:{\changeurlcolor{black}\href{https://doi.org/10.1029/2002JD002353}{\detokenize{10.1029/2002JD002353}}}.
+
+\bibitem[Goodrum \em{et~al.}(2007)Goodrum, Kidwell, and
+  Winston]{goodrum_noaa_2007}
+Goodrum, G.; Kidwell, K.B.; Winston, W.
+\newblock {NOAA} {KLM} {USER}'{S} {GUIDE}.
+\newblock Technical report, NOAA/NESDIS/NCDC/Satellite Data Services Division,
+  Suitland, MD,  2007.
+\newblock http://www.ncdc.noaa.gov/oa/pod-guide/ncdc/docs.
+
+\bibitem[Walton \em{et~al.}(1998)Walton, Sullivan, Rao, and
+  Weinreb]{walton_corrections_1998}
+Walton, C.C.; Sullivan, J.T.; Rao, C.R.N.; Weinreb, M.P.
+\newblock Corrections for detector nonlinearities and calibration
+  inconsistencies of the infrared channels of the advanced very high resolution
+  radiometer.
+\newblock {\em Journal of Geophysical Research: Oceans} {\bf 1998}, {\em
+  103},~3323--3337.
+\newblock
+  doi:{\changeurlcolor{black}\href{https://doi.org/10.1029/97JC02018}{\detokenize{10.1029/97JC02018}}}.
+
+\bibitem[van~der Ziel(1976)]{van_der_ziel_1976}
+van~der Ziel, A.
+\newblock {\em Solid State Physical Electronics}; 3d ed. Prentice-Hall,  1976;
+  p. 528.
+
+\bibitem[Steyn-Ross \em{et~al.}(1994)Steyn-Ross, Steyn-Ross, and
+  Clift]{steyn-ross_avhrr_1994}
+Steyn-Ross, D.; Steyn-Ross, M.; Clift, S.
+\newblock AVHRR calibrations: The nonlinearity correction.
+\newblock  1994.
+
+\bibitem[Cao \em{et~al.}(2001)Cao, Weinreb, and Sullivan]{cao_solar_2001}
+Cao, C.; Weinreb, M.; Sullivan, J.
+\newblock Solar contamination effects on the infrared channels of the advanced
+  very high resolution radiometer ({AVHRR}).
+\newblock {\em Journal of Geophysical Research: Atmospheres} {\bf 2001}, {\em
+  106},~33463--33469.
+\newblock
+  doi:{\changeurlcolor{black}\href{https://doi.org/10.1029/2001JD001051}{\detokenize{10.1029/2001JD001051}}}.
+
+\bibitem[Trishchenko and Li(2001)]{trishchenko_method_2001}
+Trishchenko, A.P.; Li, Z.
+\newblock A method for the correction of {AVHRR} onboard {IR} calibration in
+  the event of short-term radiative contamination.
+\newblock {\em International Journal of Remote Sensing} {\bf 2001}, {\em
+  22},~3619--3624.
+\newblock
+  doi:{\changeurlcolor{black}\href{https://doi.org/10.1080/01431160152609362}{\detokenize{10.1080/01431160152609362}}}.
+
+\bibitem[Allan(1987)]{allan_1987}
+Allan, W., D.
+\newblock Should the classical variance be used as a basic measure in standards
+  metrology?
+\newblock {\em IEEE Trans. Instrum. Meas.} {\bf 1987}, {\em IM-36},~646--654.
+
+\bibitem[Tennant \em{et~al.}(2008)Tennant, Lee, Zandian, Piquette, and
+  Carmody]{tennant_rule7_2008}
+Tennant, W.; Lee, D.; Zandian, M.; Piquette, E.; Carmody, M.
+\newblock MBE HgCdTe Technology: A very general solution to IR Detection,
+  Described by ?Rule 07?, a very convenient Heuristic.
+\newblock {\em Journal of Electronic Materials} {\bf 2008}, {\em
+  37},~1406--1410.
+
+\bibitem[Schuster \em{et~al.}(2016)Schuster, Tennant, Bellotti, and
+  Wijewarnasuriya]{schuster_auger_2016}
+Schuster, J.; Tennant, W.; Bellotti, E.; Wijewarnasuriya, P.
+\newblock Analysis of the auger recombination rate in P+ N- n- N- N HgCdTe
+  detectors for HOT applications.
+\newblock  Infrared Technology and Applications XLII. International Society for
+  Optics and Photonics,  2016, Vol. 9819, p. 98191F.
+
+\end{thebibliography}
